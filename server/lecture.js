@@ -18,12 +18,16 @@ CRETE POSTGRESQL DATABASE
 
 CREATE DATABASE postgres()
 
-psotgres -U postgres ( if it is not working either you already installed postgresql then 
+psql -U postgres ( if it is not working either you already installed postgresql then 
     you should setup environment variable as we done below )
 
 setx PATH "%PATH%;C:\Program Files\PostgreSQL\18\bin"
 SUCCESS: Specified value was saved.
 psql --version
+
+now you can connect to postgresql
+
+psql -U postgres
 
 after successfully connected, 
 

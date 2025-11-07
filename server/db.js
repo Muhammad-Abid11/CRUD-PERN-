@@ -3,7 +3,7 @@ import pkg from "pg";
 const { Pool } = pkg;
 
 // Create a connection pool
-const pool = new Pool({
+export const pool = new Pool({
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   host: process.env.PGHOST,
