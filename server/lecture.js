@@ -13,8 +13,27 @@ npm i --save-dev nodemon
 
 -----------------------------------------
 
-CRETE POSTGRESQL DATABASE
+INITIAlIZE PROJECT SETUP
 
+CREATE POSTGRESQL DATABASE
+
+//---- POSTGRESQL DATABASE
+\l --> list all database in postgresql
+\dt --> show table in database
+\c databasename --> move inside a database
+
+
+\dt
+Did not find any tables.
+postgres=# \d
+Did not find any relations.
+postgres=# create database perntodo; --->CREATE DATABASE
+postgres=# \c perntodo
+You are now connected to database "perntodo" as user "postgres".
+CREATE TABLE todo(
+    todo_id SERIAL PRIMARY KEY,
+    description VARCHAR(255)
+);
 
 CREATE DATABASE postgres()
 
