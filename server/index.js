@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import connectedDB from "./db.js";
 import todoRoutes from "./routes/todo.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 connectedDB();
 const app = express();
@@ -13,6 +14,9 @@ app.use(express.json()); //middleware
 
 // Todo routes
 app.use("/todos", todoRoutes);
+
+// Auth routes
+app.use("/auth", authRoutes);
 
 // Root route
 app.get("/", (req, res) => {
