@@ -1,13 +1,18 @@
 import { Router } from "express";
 import { pool } from "../db.js";
 import { SuccessRESPONSE, ErrorResponse, Is_EXIST } from "../utils/index.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 const app = Router();
 
 // 📘 Get all todos
-app.get("/", async (req, res) => {
+app.get("/", verifyToken, async (req, res) => {
   try {
-    const response = await pool.query("SELECT * FROM todo");
+    const userId = req.user.user_id; // coming from JWT
+
+    const response = await pool.query("SELECT * FROM todo WHERE user_id = $1", [
+      userId,
+    ]);
     SuccessRESPONSE({
       res,
       message: "Todos found successfully",
@@ -15,7 +20,6 @@ app.get("/", async (req, res) => {
       status: "success",
     });
   } catch (err) {
-    console.error(err);
     ErrorResponse({
       res,
       error: err.message,
@@ -44,19 +48,21 @@ app.get("/:id", async (req, res) => {
 });
 
 // ➕ Create todo
-app.post("/", async (req, res) => {
+app.post("/", verifyToken, async (req, res) => {
   try {
     const { description } = req.body;
+    const userId = req.user.user_id; // coming from JWT
     const response = await pool.query(
-      "INSERT INTO todo (description) VALUES($1) RETURNING *",
-      [description]
+      "INSERT INTO todo (description, user_id) VALUES($1, $2) RETURNING *",
+      [description, userId]
     );
     /*
     INSERT INTO --> insert data into todo table
     todo --> table name
-    (description) --> column name
-    VALUES($1) --> values
+    (description, user_id) --> column names
+    VALUES($1, $2) --> values
     $1 --> description
+    $2 --> user_id
     RETURNING * --> return all columns
     */
     SuccessRESPONSE({
@@ -66,7 +72,6 @@ app.post("/", async (req, res) => {
       status: "success",
     });
   } catch (err) {
-    console.error(err);
     ErrorResponse({
       res,
       error: err.message,

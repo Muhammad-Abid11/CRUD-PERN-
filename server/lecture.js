@@ -76,6 +76,27 @@ CREATE TABLE todo(
 
 -----------------------------------------
 
+// Since their is no relationship between tables and user that why I am getting todo table data in all user.
+
+ALTER TABLE todo
+ADD COLUMN user_id INT REFERENCES users(user_id);
+
+
+If you don’t have a users table yet, use:
+
+CREATE TABLE todo(
+    todo_id SERIAL PRIMARY KEY,
+    description VARCHAR(255),
+    user_id INT NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+);
+
+Now I also update put and delete routes to check whether the todo belongs to the user or not.
+
+
+
+-----------------------------------------
+
 
 \l => list all database in postgresql
 
