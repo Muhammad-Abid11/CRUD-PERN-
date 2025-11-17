@@ -10,7 +10,7 @@ app.get("/", verifyToken, async (req, res) => {
   try {
     const userId = req.user.user_id; // coming from JWT
 
-    const response = await pool.query("SELECT * FROM todo WHERE user_id = $1", [
+    const response = await pool.query("SELECT * FROM todo WHERE user_id = $1 ORDER BY todo_id DESC", [
       userId,
     ]);
     SuccessRESPONSE({

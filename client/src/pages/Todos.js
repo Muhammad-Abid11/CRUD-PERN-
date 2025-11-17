@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import API from "../api/axios";
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiCheck } from "react-icons/fi";
 
@@ -11,7 +11,7 @@ export default function Todos() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const getTodos = async () => {
+  const getTodos = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -23,7 +23,7 @@ export default function Todos() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const addTodo = async (e) => {
     e.preventDefault();
@@ -75,18 +75,20 @@ export default function Todos() {
     }
   };
 
-  const deleteTodo = async (id) => {
+  const deleteTodo = useCallback(async (id) => {
     try {
       setIsLoading(true);
       await API.delete(`/todos/${id}`);
-      await getTodos();
+      // await getTodos();
+      // OR update todos state locally
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.todo_id !== id));
     } catch (err) {
       setError("Failed to delete todo. Please try again.");
       console.error("Error deleting todo:", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [getTodos]);
 
   useEffect(() => {
     getTodos();
