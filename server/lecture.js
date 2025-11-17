@@ -107,3 +107,54 @@ Now I also update put and delete routes to check whether the todo belongs to the
 
 
 */
+
+
+// ---------------- NEON DATABASE ----------------------------
+
+/*---------------MIGRATION----------------
+------------------------------------------------------------
+1) Create a dump file from your LOCAL PostgreSQL database
+------------------------------------------------------------
+    This command exports your entire local database (schema + data)
+    into a .sql file. You will upload this to Neon later.
+*/
+//pg_dump -U postgres -d perntodo > local_dump.sql
+
+
+
+/*
+------------------------------------------------------------
+2) Convert the dump file into CLEAN UTF-8 encoding
+------------------------------------------------------------
+    Windows often creates dump files with a BOM (0xFF) or ANSI
+    encoding. Neon only accepts UTF-8.  
+    This command removes BOM and converts file to proper UTF-8.
+*/
+//Get-Content local_dump.sql | Set-Content local_dump_clean.sql -Encoding UTF8
+
+
+
+/*
+------------------------------------------------------------
+ 3) Import the cleaned dump file into the Neon PostgreSQL database
+------------------------------------------------------------
+    This uploads your schema and data from local_dump_clean.sql
+    into your Neon cloud database.  
+    Use the connection string provided by Neon Dashboard.
+*/
+
+//psql "postgresql://neondb_owner:npg_bAwCOhu9MK6g@ep-rapid-sound-adlqo25z-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f local_dump_clean.sql
+
+
+/* 
+⭐ Summary (short version)
+Dump local DB → local_dump.sql
+Convert to UTF-8 → local_dump_clean.sql
+Import to Neon → run psql with -f local_dump_clean.sql 
+*/
+
+
+// In PostgreSQL, if your search_path doesn’t include public, it will fail with:
+// const users = await pool.query("SELECT * FROM users");           // wrong for deployed database
+
+// const users = await pool.query("SELECT * FROM public.users");    //  correct

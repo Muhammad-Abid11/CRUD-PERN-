@@ -12,7 +12,7 @@ router.post("/register", async (req, res) => {
     const { name, email, password } = req.body;
 
     // check existing email
-    const userExist = await pool.query("SELECT * FROM users WHERE email=$1", [
+    const userExist = await pool.query("SELECT * FROM public.users WHERE email=$1", [
       email,
     ]);
 
@@ -25,7 +25,7 @@ router.post("/register", async (req, res) => {
 
     // save user
     const newUser = await pool.query(
-      `INSERT INTO users (name, email, password) 
+      `INSERT INTO public.users (name, email, password) 
        VALUES ($1, $2, $3) RETURNING *`,
       [name, email, hashedPassword]
     );
@@ -47,7 +47,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const result = await pool.query("SELECT * FROM users WHERE email=$1", [
+    const result = await pool.query("SELECT * FROM public.users WHERE email=$1", [
       email,
     ]);
 
@@ -72,7 +72,7 @@ router.post("/login", async (req, res) => {
 // GET CURRENT USER
 router.get("/me", verifyToken, async (req, res) => {
   const user = await pool.query(
-    "SELECT user_id, name, email FROM users WHERE user_id=$1",
+    "SELECT user_id, name, email FROM public.users WHERE user_id=$1",
     [req.user.user_id]
   );
 

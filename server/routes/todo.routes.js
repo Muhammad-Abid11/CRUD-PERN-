@@ -10,7 +10,7 @@ app.get("/", verifyToken, async (req, res) => {
   try {
     const userId = req.user.user_id; // coming from JWT
 
-    const response = await pool.query("SELECT * FROM todo WHERE user_id = $1 ORDER BY todo_id DESC", [
+    const response = await pool.query("SELECT * FROM public.todo WHERE user_id = $1 ORDER BY todo_id DESC", [
       userId,
     ]);
     SuccessRESPONSE({
@@ -53,7 +53,7 @@ app.post("/", verifyToken, async (req, res) => {
     const { description } = req.body;
     const userId = req.user.user_id; // coming from JWT
     const response = await pool.query(
-      "INSERT INTO todo (description, user_id) VALUES($1, $2) RETURNING *",
+      "INSERT INTO public.todo (description, user_id) VALUES($1, $2) RETURNING *",
       [description, userId]
     );
     /*
@@ -88,7 +88,7 @@ app.put("/:id", async (req, res) => {
     if (!exists) return;
 
     const response = await pool.query(
-      "UPDATE todo SET description = $1 WHERE todo_id = $2 RETURNING *",
+      "UPDATE public.todo SET description = $1 WHERE todo_id = $2 RETURNING *",
       [description, id]
     );
 
@@ -114,7 +114,7 @@ app.delete("/:id", async (req, res) => {
     if (!exists) return;
 
     const response = await pool.query(
-      "DELETE FROM todo WHERE todo_id = $1 RETURNING *",
+      "DELETE FROM public.todo WHERE todo_id = $1 RETURNING *",
       [req.params.id]
     );
 

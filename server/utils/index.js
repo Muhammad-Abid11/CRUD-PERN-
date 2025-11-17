@@ -15,7 +15,7 @@ const ErrorResponse = ({
 
 const Is_EXIST = async (res, table, id) => {
   const response = await pool.query(
-    `SELECT * FROM ${table} WHERE todo_id = $1`,
+    `SELECT * FROM public.${table} WHERE todo_id = $1`,
     [id]
   );
   // if todo not found
