@@ -21,7 +21,14 @@ export const pool = new Pool({
 
 const connectDB = async () => {
   try {
-    await pool.connect();
+    /* 
+    await pool.connect(); //ISSUE: Server is crashing after a certain time
+    WHY?
+    ✨ pool.query() automatically manages connections
+    ❌ You NEVER need manual .connect() in Neon
+    ✔ Prevents connection termination
+    ✔ Prevents server crashes
+    */
     console.log("✅ Connected to PostgreSQL successfully!");
   } catch (err) {
     console.error("❌ PostgreSQL connection error:", err.stack);
