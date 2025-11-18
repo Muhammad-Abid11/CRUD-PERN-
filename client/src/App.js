@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import PublicRoute from "./routes/PublicRoute";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -27,8 +28,16 @@ function App() {
         <AuthProvider>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/" element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            } />
+            <Route path="/register" element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            } />
             {/* Protect todos page */}
             <Route
               path="/todos"
