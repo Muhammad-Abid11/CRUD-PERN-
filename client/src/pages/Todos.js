@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import API from "../api/axios";
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiCheck } from "react-icons/fi";
+import Loading from "../components/Loading";
 
 export default function Todos() {
   const [todos, setTodos] = useState([]);
@@ -144,12 +145,7 @@ export default function Todos() {
         {/* Todo List */}
         <div className="space-y-3">
           {isLoading && todos.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-xl shadow border border-gray-200 transition-colors duration-200">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-4 text-gray-600 transition-colors duration-200">
-                Loading your todos...
-              </p>
-            </div>
+            <Loading type="card" text="Loading your todos..." />
           ) : todos.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-xl shadow border border-gray-200 transition-colors duration-200">
               <p className="text-gray-500 transition-colors duration-200">
