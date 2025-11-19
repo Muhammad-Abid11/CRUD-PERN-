@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import API from "../api/axios";
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiCheck } from "react-icons/fi";
+import { ImSpinner9 } from "react-icons/im";
 import Loading from "../components/Loading";
 
 export default function Todos() {
@@ -9,12 +10,16 @@ export default function Todos() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingTodo, setEditingTodo] = useState({ id: null, description: "" });
   const [editDescription, setEditDescription] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState({
+    addTodo: false,
+    updateTodo: false,
+  });
+  const [deletingTodoId, setDeletingTodoId] = useState(null);
   const [error, setError] = useState(null);
 
   const getTodos = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setIsLoading({ addTodo: true, updateTodo: false });
       setError(null);
       const res = await API.get("/todos");
       setTodos(res.data.data);
@@ -22,7 +27,7 @@ export default function Todos() {
       setError("Failed to fetch todos. Please try again.");
       console.error("Error fetching todos:", err);
     } finally {
-      setIsLoading(false);
+      setIsLoading({ addTodo: false, updateTodo: false });
     }
   }, []);
 
@@ -31,7 +36,7 @@ export default function Todos() {
     if (!description.trim()) return;
 
     try {
-      setIsLoading(true);
+      setIsLoading({ addTodo: true, updateTodo: false });
       await API.post("/todos", {
         description,
       });
@@ -41,7 +46,7 @@ export default function Todos() {
       setError("Failed to add todo. Please try again.");
       console.error("Error adding todo:", err);
     } finally {
-      setIsLoading(false);
+      setIsLoading({ addTodo: false, updateTodo: false });
     }
   };
 
@@ -62,7 +67,7 @@ export default function Todos() {
     if (!editDescription.trim()) return;
 
     try {
-      setIsLoading(true);
+      setIsLoading({ updateTodo: true, addTodo: false });
       await API.put(`/todos/${editingTodo.todo_id}`, {
         description: editDescription,
       });
@@ -72,13 +77,13 @@ export default function Todos() {
       setError("Failed to update todo. Please try again.");
       console.error("Error updating todo:", err);
     } finally {
-      setIsLoading(false);
+      setIsLoading({ updateTodo: false, addTodo: false });
     }
   };
 
   const deleteTodo = useCallback(async (id) => {
+    setDeletingTodoId(id);
     try {
-      setIsLoading(true);
       await API.delete(`/todos/${id}`);
       // await getTodos();
       // OR update todos state locally
@@ -87,7 +92,7 @@ export default function Todos() {
       setError("Failed to delete todo. Please try again.");
       console.error("Error deleting todo:", err);
     } finally {
-      setIsLoading(false);
+      setDeletingTodoId(null);
     }
   }, [getTodos]);
 
@@ -127,8 +132,9 @@ export default function Todos() {
 
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 min-w-[120px] sm:min-w-[140px] h-[52px] sm:h-auto"
-              disabled={!description.trim()}
+              className={`flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg min-w-[120px] 
+                ${isLoading.addTodo ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={!description.trim() || isLoading.addTodo}
             >
               <FiPlus size={18} />
               <span className="whitespace-nowrap">Add Task</span>
@@ -144,7 +150,7 @@ export default function Todos() {
 
         {/* Todo List */}
         <div className="space-y-3">
-          {isLoading && todos.length === 0 ? (
+          {isLoading.addTodo && todos.length === 0 ? (
             <Loading type="card" text="Loading your todos..." />
           ) : todos.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-xl shadow border border-gray-200 transition-colors duration-200">
@@ -168,17 +174,22 @@ export default function Todos() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openEditModal(todo)}
-                        className="p-2 text-gray-500 hover:text-blue-600 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                        className="p-2 text-gray-500 hover:text-blue-600 rounded-full hover:bg-gray-100"
                         title="Edit"
                       >
                         <FiEdit2 size={18} />
                       </button>
                       <button
                         onClick={() => deleteTodo(todo.todo_id)}
-                        className="p-2 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50 transition-colors duration-200"
+                        className="p-2 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50"
                         title="Delete"
+                        disabled={deletingTodoId === todo.todo_id}
                       >
-                        <FiTrash2 size={18} />
+                        {deletingTodoId === todo.todo_id ? (
+                          <ImSpinner9 className="animate-spin" size={18} />
+                        ) : (
+                          <FiTrash2 size={18} />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -233,10 +244,14 @@ export default function Todos() {
                 </button>
                 <button
                   type="submit"
-                  disabled={!editDescription.trim()}
+                  disabled={isLoading.updateTodo}
                   className="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center"
                 >
-                  <FiCheck size={18} />
+                  {isLoading.updateTodo ? (
+                    <ImSpinner9 className="animate-spin" size={18} />
+                  ) : (
+                    <FiCheck size={18} />
+                  )}
                   Save Changes
                 </button>
               </div>
