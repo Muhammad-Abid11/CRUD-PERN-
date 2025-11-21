@@ -158,3 +158,36 @@ Import to Neon → run psql with -f local_dump_clean.sql
 // const users = await pool.query("SELECT * FROM users");           // wrong for deployed database
 
 // const users = await pool.query("SELECT * FROM public.users");    //  correct
+
+
+// ----------------DOCKER COMMANDS----------------
+/* 
+
+File Need to Create
+- "DockerFile.server" in the root directory or "DockerFile" inside "server" directory
+- ".dockerignore" file inside "server" directory
+
+- "DockerFile.client" in the client directory or "DockerFile" inside "client" directory
+- ".dockerignore" file in the "client" directory
+
+- "docker-compose.yml" in the root directory( it is used to define and run multi-container Docker applications )
+
+Commands
+- docker run -p 3000:3000 crud-pern-client:latest ( is used to run the client image, terminal close image also close )
+- docker run -p 5001:5001 crud-pern-server:latest ( is used to run the server image, terminal close image also close )
+(5001:5001  here 1st 5001 is port of host and 2nd 5001 is port of container)
+
+- docker-compose up --build ( is used to build and run the containers using docker-compose.yml file, terminal close image not close )
+- docker-compose build ( is used to build the containers using docker-compose.yml file )
+- docker build -t crud-pern-client . ( create build with name crud-pern-client )
+
+- docker-compose up ( is used to run the containers using docker-compose.yml file, terminal close image not close )
+- docker-compose down ( is used to stop and remove the containers )
+
+- docker-compose ps ( is used to show the running containers )
+- docker-compose logs ( is used to show the logs of the containers )
+
+- docker images ( is used to show the images )
+- docker system prune -a ( is used to delete all images )
+
+*/

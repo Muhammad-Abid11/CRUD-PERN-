@@ -1,0 +1,35 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: pern-backend
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - PGUSER=neondb_owner
+      - PGPASSWORD=npg_bAwCOhu9MK6g
+      - PGHOST=ep-rapid-sound-adlqo25z-pooler.c-2.us-east-1.aws.neon.tech
+      - PGPORT=5432
+      - PGDATABASE=neondb
+      - DATABASE_URL=postgresql://neondb_owner:npg_bAwCOhu9MK6g@ep-rapid-sound-adlqo25z-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+      - JWT_SECRET=secret123
+    volumes:
+      - ./server:/app
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: pern-frontend
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+
